@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    *{
+        margin:0;
+        padding:0;
+        list-style: none;
+    }
+    .table{
+        width: 692px;
+        height: 700px;
+        position: absolute;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        margin:auto;
+        background-image: url(image/zrf.jpg);
+        background-size: 692px 700px;
+        background-position: center;
+    }
+    .table .zz{
+        width:100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        position: absolute;
+        top:0;
+        left:0;
+    }
+    .table .left{
+        width: 70px;
+        height: 30px;
+        background: skyblue;
+        position: absolute;
+        top:530px;
+        left:300px;
+        border:0;
+        font-size: 25px;
+        z-index: 1;
+        /*color: white;*/
+    }
+    .table .right{
+        width: 70px;
+        height: 30px;
+        background: skyblue;
+        position: absolute;
+        top:580px;
+        left:300px;
+        border:0;
+        font-size: 25px;
+        z-index: 1;
+        /*color: white;*/
+    }
+    .poke1{
+        width: 90px;
+        height: 130px;
+        position: absolute;
+        left:300px;
+        background-size: 90px 130px;
+        opacity: 0;
+        border:2px solid white;
+        z-index: 9999;
+
+    }
+    .poke1.active{
+        border-color: red;
+        transition: 0.5s;
+        transform:translateY(-20px);
+    }
+</style>
+<body>
+<div class="table">
+    <button class="left">&lt;</button>
+    <button class="right">&gt;</button>
+  <div class="zz"></div>
+</div>
+</body>
+</html>
+<script src="jquery/jquery.js"></script>
+<script>
+    let poke=[];
+    let color=['h','s','d','c'];
+    let biao={};
+    let left=$('.left');
+    let right=$('.right');
+    console.log(right);
+
+   let z=0;
+   right.click(function(){
+         z++;
+         $('.zuo:last')
+         .css('zIndex',z)
+         .animate({left:'+=400'})
+         .removeClass('zuo')
+         .addClass('you')
+
+    })
+
+
+    left.click(function(){
+        let you=$('.you');
+        if(you.length==0){
+            return;
+        }
+        for(let i=you.length-1;i>=0;i--){
+            $(you[i])
+                .delay(100*i)
+                .removeClass('you')
+                .addClass('zuo')
+                .animate({left:'-=400'},function(){
+                     $(this).css('zIndex',0)
+                })
+        }
+    })
+
+    for(let i=0;i<52;i++){
+        let huase=color[Math.floor(Math.random()*4)];
+        let shuzi=Math.floor(Math.random()*13+1);
+        while(biao[huase+'_'+shuzi]){
+            huase=color[Math.floor(Math.random()*4)];
+            shuzi=Math.floor(Math.random()*13+1);
+        }
+        biao[huase+'_'+shuzi]=true;
+        poke.push({huase,shuzi});
+//        console.log(huase,shuzi);
+//        console.log(poke);
+    }
+
+   let index=0;
+   for(let i=0;i<7;i++){
+        for(let j=0;j<=i;j++){
+            let item=poke[index];
+//            console.log(item);
+            index++;
+            let src='url(img/'+item.huase+item.shuzi+'.png)';
+            $('<div>').addClass('poke1')
+                .css('background',src)
+                .data('num',item.shuzi)
+                .delay(30*index)
+                .prop('id',`${i}_${j}`)
+                .animate({
+                    left:300-i*50+100*j,
+                    top:60*i,
+                    opacity: 1
+                })
+                .appendTo('.table')
+        }
+   }
+
+
+   for(;index<poke.length;index++){
+       let item=poke[index];
+//       console.log(item);
+       let src='url(img/'+item.huase+item.shuzi+'.png)';
+       $('<div>').addClass('poke1 zuo')
+           .data('num',item.shuzi)
+           .css('background',src)
+           .delay(30*index)
+           .animate({
+               left:100,
+               top:500,
+               opacity: 1
+           })
+           .appendTo('.table')
+       console.log($('num'));
+   }
+
+
+   let first=null;
+
+   $('.poke1').click(function(){
+      let coo=$(this).prop('id').split('_');
+      let ele=`#${parseInt(coo[0])+1}_${parseInt(coo[0])+1}`;
+      let ele1=`#${parseInt(coo[0]+1)}_${coo[1]}`;
+      if($(ele).length==1||$(ele1).length==1){
+              return;
+      }
+      $(this).toggleClass('active');
+
+      if(!first) {
+          first = this;
+          let sum = $(first).data('num');
+          if (sum == 13) {
+              $('.active').animate({left: 600, top: 0}).queue(function () {
+                  $(this).remove();
+                  first = null;
+              })
+
+          }
+      }
+          else {
+              let sum = $(first).data('num') + $(this).data('num');
+              if (sum == 13) {
+                  $('.active').animate({left: 600, top: 0}).queue(function () {
+                      $(this).remove();
+                  })
+              }
+              else{
+                  $('.active').removeClass('active');
+              }
+              first=null;
+          }
+
+
+   })
+
+
+
+
+
+</script>

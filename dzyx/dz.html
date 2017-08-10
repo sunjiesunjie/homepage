@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <style>
+
+        *{
+        	margin: 0;
+        	padding: 0;
+        	list-style: none;
+        }
+        body{
+        	background-image: url('img/s1jpg.jpg');
+        	background-repeat: no-repeat;
+        	background-size: cover;
+        }
+        @keyframes yun{
+        	from{
+        		transform: translateX(-20px);
+        	}
+        	to{
+        		transform: translateX(20px);
+        	}
+
+        }
+        .yun{
+        	width: 800px;
+        	height: 100px;
+        	background: #FAF77E;
+        	position: absolute;
+        	left: 300px;
+        	z-index: 999;
+        	border-radius: 10px;
+        	animation: yun ease-in-out 1s infinite alternate;
+        	text-align: center;
+        	line-height: 100px;
+        	font-size: 40px;
+        	color: #2B56B5;
+        	font-weight: bold;
+
+        }
+        .box{
+        	width: 100px;
+        	height:35px;
+        	font-size:18px;
+        	background: green; 
+        	position: absolute;
+        	top: 150px;
+        	left: 20px;
+        	text-align: center; 
+        	line-height: 35px;
+        	color: white;
+        	border-radius: 50px;
+        	border: 3px solid white;
+        }
+        .box .sm{
+        	display: inline-block;
+        	width: 150px;
+        	height: 10px;
+        	position: absolute;
+        	left: 110px;
+        	top: 10px;
+        	background: red;
+        	border-radius: 50px;
+        	border: 3px solid white;
+
+        }
+        .box .sm1{
+           display: inline-block;
+           width: 150px;
+           height: 10px;
+           position: absolute;
+           top: 0;
+           left: 0;
+           background: orange;
+           border-radius: 5px;
+
+        }
+        .box1{
+        	width: 100px;
+        	height:35px;
+        	font-size: 18px;
+        	background: pink; 
+        	position: absolute;
+        	top: 200px;
+        	left: 20px;
+        	text-align: center; 
+        	line-height: 35px;
+        	color: white;
+        	border-radius: 50px;
+        	border: 3px solid white;
+        }
+        .gu{
+        	width: 100px;
+        	height:35px;
+        	font-size: 18px;
+        	background: #f40; 
+        	position: absolute;
+        	top: 250px;
+        	left: 20px;
+        	text-align: center; 
+        	line-height: 35px;
+        	color: white;
+        	border-radius: 50px;
+        	border: 3px solid white;
+        }
+
+
+
+
+    </style>
+    <body>
+        <div class="yun">愉快的字母游戏 开始啦!</div>
+        <div class="box">生命<span class="sm"><span class="sm1"></span></span></div>
+        <div class="box1">分数<span class="so">0</span></div>
+        <div class="gu">关卡<span class="gu1">0</span></div>
+    </body>
+</html>
+<script>
+/*	
+属性
+    0-z
+    个数
+    速度
+    第几关
+    生死
+    时间
+
+
+方法
+    产生
+	掉
+	消失
+	下一关
+	重新开始*/
+	
+
+function game(){
+     this.charArr=[
+     ['A','images/sj1_01.png'],
+     ['B','images/sj1_03.png'],
+     ['C','images/sj1_05.png'],
+     ['D','images/sj1_07.png'],
+     ['E','images/sj1_09.png'],
+     ['F','images/ww_03.png'],
+     ['G','images/sj1_12.png'],
+     ['H','images/sj1_14.png'],
+     ['I','images/sj1_16.png'],
+     ['J','images/js_03.png'],
+     ['K','images/sj1_19.png'],
+     ['L','images/sj1_21.png'],
+     ['M','images/sj1_23.png'],
+     ['N','images/sj1_32.png'],
+     ['O','images/js_07.png'],
+     ['P','images/sj1_36.png'],
+     ['Q','images/js_09.png'],
+     ['R','images/sj1_40.png'],
+     ['S','images/sj1_42.png'],
+     ['T','images/sj1_48.png'],
+     ['U','images/sj1_50.png'],
+     ['V','images/sj1_52.png'],
+     ['W','images/sj1_54.png'],
+     ['X','images/sj1_56.png'],
+     ['Y','images/sj1_59.png'],
+     ['Z','images/sj1_61.png']]
+
+
+     this.charlength=5;
+     this.currentelement=[];
+     this.cw=window.innerWidth;
+     this.speed=10;
+     this.colors=[0,2,4,3,'b','a'];
+     // console.log(this.charlength);
+     this.sm=10;
+     this.so=0;
+     this.smm=document.querySelector('.sm1');
+     this.soo=document.querySelector('.so');
+     this.gq=10;
+     this.currentops=[];
+     this.gu=1;
+     this.gu1=document.querySelector('.gu1');
+}
+game.prototype={
+     start:function(){
+          this.getElements(this.charlength);
+          this.drop();
+     },
+     // 获取指定个数
+     getElements:function(length){
+     	for(let i=0;i<length;i++){
+     		// do{
+     			this.getchar();
+     		// }while(currentelement[i]);
+     		   		 
+     	}
+     },
+     // 数字去重
+     repeat:function(text){
+          return this.currentelement.some(function(value){
+          	return value.innerText==text;
+          })
+
+     },
+     // 位置去重
+     position:function(lefts){
+           return this.currentops.some(function(value){
+           	 return lefts<value+50 && lefts+50>value;
+           })
+     },
+     // 随机产生数字
+     getchar:function(){
+     	// this.charArr[num] 找到第num个字符
+     	let num=Math.floor(Math.random()*this.charArr.length);
+         while(this.repeat(this.charArr[num][0])){
+         	num=Math.floor(Math.random()*this.charArr.length);
+         }
+     	let ele=document.createElement('div');
+     	let tops=Math.random()*60;
+     	let lefts=Math.random()*(this.cw-400)+200; 
+                	
+        
+         while(this.position(lefts)){
+         	  lefts=Math.random()*(this.cw-400)+200;
+         }
+      ele.style.cssText=`
+          width:50px;height:60px;
+          background-image:url(${this.charArr[num][1]});
+          background-position:50px 57px;
+          background-size:cover;
+          border-radius:5px;
+          font-size:0px;
+          text-align:center;line-height:60px;color:white;
+           position:absolute;left:${lefts}px;top:${tops}px;         
+     	`
+        // ele.style.background=this.getcolors();
+     	ele.innerText=this.charArr[num][0];
+     	this.currentelement.push(ele);
+     	this.currentops.push(lefts);
+     	document.body.appendChild(ele); 
+     	// console.log(ele);   	
+     },
+      // 随机色
+     getcolors:function(){
+     	let color='#';
+     	for(let i=0;i<3;i++){
+     	   let num=Math.floor(Math.random()*this.colors.length);
+     	   color+=num;
+        }
+        return color;
+     },
+      // 下降
+     drop:function(){  
+     	let self=this;      
+            self.t=setInterval(function(){         	
+              for(let i=0;i<self.currentelement.length;i++){
+              	  let tops=self.currentelement[i].offsetTop+self.speed;
+              	  self.currentelement[i].style.top=tops+'px';
+              	  if(tops>500){
+              	  	// 移除页面中该元素 从数组中清除
+              	    document.body.removeChild(self.currentelement[i]);
+                    self.currentelement.splice(i,1);
+                    self.currentops.splice(i,1);
+                    // 什么减值
+                    self.sm--; 
+                    // 掉血                  
+                    self.smm.style.width=self.sm/10*100+'%'; 
+                    // 重新开始
+                    if(self.sm<0){               
+                    	let flag=window.confirm('游戏结束');
+                    	if(flag){
+                         self.restart();
+                    	}
+                    	else{
+                    		close;
+                    	}
+                    }
+                }
+              }
+              
+              if(self.currentelement.length<self.charlength){
+              	        self.getchar();
+              }
+
+         },500)
+     },
+     // 键盘事件
+     key:function(){
+     	let self=this;
+     	document.body.onkeydown=function(e){
+             let code=String.fromCharCode(e.keyCode);
+	         for(let i=0;i<self.currentelement.length;i++){
+	         	 if(code==self.currentelement[i].innerText){
+	         	 	 document.body.removeChild(self.currentelement[i]);
+	         	 	 self.currentelement.splice(i,1);
+                     self.so++;
+                     self.soo.innerText=self.so;                    
+                     self.currentops.splice(i,1);
+                    // 加分
+                     if(self.so>self.gq){                     	
+                     	self.next();
+                     }
+                     
+	         	 }
+	         }
+	         if(self.currentelement.length<self.charlength){
+	         	 self.getchar();
+	         }
+     	}
+     },
+     restart:function(){
+     /*初始状态
+     停止页面
+     元素删除
+     生命 分数W
+     开始*/
+     clearInterval(this.t);
+     for(let i=0;i<this.currentelement.length;i++){
+        document.body.removeChild(this.currentelement[i]);
+     }
+	    this.currentelement=[];
+	    this.sm=10; 
+        this.smm.style.width=this.sm/10*100+'%';
+	    // this.smm.innerText=this.sm;
+	    /*this.so=0;
+	    this.soo.innerText=this.so;*/
+       
+	    this.currentops=[];        
+	    this.start();
+
+     },
+     next:function(){
+       clearInterval(this.t);
+	     for(let i=0;i<this.currentelement.length;i++){
+	        document.body.removeChild(this.currentelement[i]);
+	     }
+	    this.currentelement=[];
+        this.charlength++;
+	    this.gq+=10;
+        this.currentops=[];
+        this.gu++;
+        this.gu1.innerText=this.gu;
+        this.speed+=5;
+        console.log(this.gu1);
+	    this.start();
+     }       
+}
+
+</script>
+<script>
+	   let g=new game();
+	   g.start();
+	   // g.drop();
+	   g.key();
+ 
+</script>
